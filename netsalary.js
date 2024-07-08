@@ -1,57 +1,59 @@
-const kraTaxRates = [
-    { amount: 0, rate: 0 },
-    { amount: 24000, rate: 0.1 },
-    { amount: 32333, rate: 0.25 },
-    { amount: 500000, rate: 0.3 },
-    { amount: 800000, rate: 0.325 },
-    { amount: Infinity, rate: 0.35 },
-  ];
-  
-  const nhifrates = [
-    { amount: 0, rate: 0 },
-    { amount: 5999, rate: 150 },
-    { amount: 7999, rate: 300 },
-    { amount: 11999, rate: 400 },
-    { amount: 14999, rate: 500 },
-    { amount: 19999, rate: 600 },
-    { amount: 24999, rate: 750 },
-    { amount: 29999, rate: 850 },
-    { amount: 34999, rate: 900 },
-    { amount: 39999, rate: 950 },
-    { amount: 44999, rate: 1000 },
-    { amount: 49999, rate: 1100 },
-    { amount: 59999, rate: 1200 },
-    { amount: 69999, rate: 1300 },
-    { amount: 79999, rate: 1400 },
-    { amount: 89999, rate: 1500 },
-    { amount: 99999, rate: 1600 },
-    { amount: Infinity, rate: 1700 },
-  ];
-  
-  const nssfRate = 0.06;
-  
-//   calculate gross salary
-grossSalary(basicSalary + Deduction)
+const KRA_TAX_RATES = [
+  { threshold: 12298, rate: 0.1 },
+  { threshold: 23885, rate: 0.15 },
+  { threshold: 35472, rate: 0.2 },
+  { threshold: 47059, rate: 0.25 },
+  { threshold: 58646, rate: 0.3 }
+];
 
-// calculate netSalary
-netSalary(grossSalary - Deduction)
+function calculatePAYE(grossSalary) {
+  let tax = 0;
+  for (let i = KRA_TAX_RATES.length - 1; i >= 0; i--) {
+      if (grossSalary > KRA_TAX_RATES[i].threshold) {
+          tax = (grossSalary - KRA_TAX_RATES[i].threshold) * KRA_TAX_RATES[i].rate;
+          break;
+      }
+  }
+  return tax;
+}
 
-// calculate deductions
+const NHIF_RATES = [
+  { range: [0, 5999], rate: 150 },
+  { range: [6000, 7999], rate: 300 },
+  { range: [8000, 11999], rate: 400 },
+  { range: [12000, 14999], rate: 500 },
+  { range: [15000, 19999], rate: 600 }
+];
 
-tax_deductionS = gross_salary * TAX_RATE
-    kra_deduction = gross_salary * KRA_RATE
-    nhif_deduction = gross_salary * NHIF_RATE
-    nssf_deduction = gross_salary * NSSF_RATE
+function calculateNHIF(grossSalary) {
+  let nhif = 0;
+  for (let i = 0; i < NHIF_RATES.length; i++) {
+      if (grossSalary >= NHIF_RATES[i].range[0] && grossSalary <= NHIF_RATES[i].range[1]) {
+          nhif = NHIF_RATES[i].rate;
+          break;
+      }
+  }
+  return nhif;
+}
 
+function calculateNSSF(grossSalary) {
+  return 2000;
+}
 
-    return {
-        "Gross Salary": gross_salary,
-        "NSSF Deduction": NSSF_deduction,
-        "NHIF Deduction": NHIF_deduction,
-        "KRA Deduction" : KRA_deduction,
-        "net Salary": net_Salary,
+function calculateNetSalary(basicSalary, benefits) {
+  const grossSalary = basicSalary + benefits;
 
-    }
+  const paye = calculatePAYE(grossSalary);
+  const nhif = calculateNHIF(grossSalary);
+  const nssf = calculateNSSF(grossSalary);
 
-    // To use the program, call the function:
-calculateNetSalary();
+  const netSalary = grossSalary - paye - nhif - nssf;
+
+  return {
+      grossSalary,
+      paye,
+      nhif,
+      nssf,
+      netSalary
+  };
+}

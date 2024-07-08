@@ -1,19 +1,16 @@
-// Prompt the user for input
-
-
-function calculateDemeritPoints() {
-    const speed = prompt(" carspeed:");
-    const speedLimit = 70;
-    const kmPerDemeritPoint = 5;
+function speedDetector(speed) {
+  const speedLimit = 70;
+  const kmPerPoint = 5;
   
-    if (speed <= speedLimit) {
-        console.log("OK");
-        window.alert('OK')
-      //   return; 
-    }else {
-    const excessSpeed = speed - speedLimit;
-    const demeritPoints = Math.floor(excessSpeed / kmPerDemeritPoint);
-  
-    if (demeritPoints <= 12) {
-      window.alert(`You have ${demeritPoints} demerit point(s)
+  if (speed < speedLimit + kmPerPoint) {
+      console.log("Ok");
+  } else {
+      let demeritPoints = Math.floor((speed - speedLimit) / kmPerPoint);
+      
+      if (demeritPoints > 12) {
+          console.log("License suspended");
+      } else {
+          console.log(`Points: ${demeritPoints}`);
       }
+  }
+}
